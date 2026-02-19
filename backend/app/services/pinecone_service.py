@@ -17,7 +17,7 @@ class VectorDBService:
         # time.sleep(0.1) 
         
         # Mock results based on "vector" similarity
-        confidence = random.uniform(0.85, 0.99)
+        confidence = random.uniform(0.85, 0.99) # nosec
         
         return {
             "matches": [

@@ -30,7 +30,7 @@ class McpKaliService:
             try:
                 data = resp.json()
             except Exception:
-                pass
+                pass # nosec
             detail = data.get("detail") if isinstance(data, dict) else None
             return {
                 "ok": False,

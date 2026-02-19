@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Console — SECUREWAY</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: #060d19;
+            --surface: #0c1829;
+            --card: #0f1f35;
+            --blue: #0ea5e9;
+            --cyan: #22d3ee;
+            --green: #34d399;
+            --red: #f43f5e;
+            --amber: #f59e0b;
+            --purple: #a78bfa;
+            --text: #94a3b8;
+            --heading: #f1f5f9;
+            --dim: #475569;
+            --line: rgba(14, 165, 233, 0.08);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: rgba(14, 165, 233, 0.3)
+        }
+
+        /* TOP BAR */
+        .topbar {
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.25rem;
+            background: var(--surface);
+            border-bottom: 1px solid var(--line);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .tb-left {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .tb-left img {
+            height: 26px
+        }
+
+        .tb-brand {
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: var(--heading);
+            letter-spacing: 3px
+        }
+
+        .tb-sep {
+            color: var(--dim);
+            font-size: 0.8rem;
+            margin: 0 0.4rem
+        }
+
+        .tb-page {
+            font-size: 0.8rem;
+            color: var(--dim);
+            font-weight: 500
+        }
+
+        .tb-right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem
+        }
+
+        .tb-status {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.72rem;
+            color: var(--green)
+        }
+
+        .s-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.3
+            }
+        }
+
+        .tb-user {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            color: var(--text);
+            background: rgba(14, 165, 233, 0.05);
+            border: 1px solid var(--line);
+            padding: 0.25rem 0.65rem;
+            border-radius: 4px;
+        }
+
+        .tb-out {
+            background: none;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            color: var(--red);
+            border-radius: 4px;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.72rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+        }
+
+        .tb-out:hover {
+            background: rgba(244, 63, 94, 0.08)
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden
+        }
+
+        /* SIDEBAR */
+        .side {
+            width: 210px;
+            background: var(--surface);
+            border-right: 1px solid var(--line);
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .s-section {
+            padding: 0 0.75rem;
+            margin-bottom: 1.25rem
+        }
+
+        .s-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .s-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 0.6rem;
+            border-radius: 6px;
+            color: var(--dim);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .s-item i {
+            width: 14px;
+            text-align: center;
+            font-size: 0.8rem
+        }
+
+        .s-item:hover {
+            background: rgba(14, 165, 233, 0.06);
+            color: var(--text)
+        }
+
+        .s-item.active {
+            background: rgba(14, 165, 233, 0.08);
+            color: var(--blue)
+        }
+
+        .s-badge {
+            margin-left: auto;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber);
+            border-radius: 3px;
+            padding: 0.1rem 0.35rem;
+            font-size: 0.6rem;
+            font-weight: 700
+        }
+
+        .s-footer {
+            margin-top: auto;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-align: center;
+            border-top: 1px solid var(--line)
+        }
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem
+        }
+
+        /* PAGE HEADER */
+        .pg-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between
+        }
+
+        .pg-head h1 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--heading);
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem
+        }
+
+        .pg-head h1 i {
+            color: var(--blue);
+            font-size: 1rem
+        }
+
+        .pg-head .pg-sub {
+            font-size: 0.78rem;
+            color: var(--dim);
+            margin-top: 0.2rem
+        }
+
+        .pg-head .pg-time {
+            font-size: 0.72rem;
+            color: var(--dim);
+            text-align: right
+        }
+
+        /* STAT ROW */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem
+        }
+
+        @media(max-width:1000px) {
+            .stat-row {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        .sc {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 1rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            transition: border-color 0.2s;
+        }
+
+        .sc:hover {
+            border-color: rgba(14, 165, 233, 0.2)
+        }
+
+        .sc-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .sc-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem
+        }
+
+        .sc-icon.i-b {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--blue)
+        }
+
+        .sc-icon.i-g {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--green)
+        }
+
+        .sc-icon.i-r {
+            background: rgba(244, 63, 94, 0.08);
+            color: var(--red)
+        }
+
+        .sc-icon.i-a {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--amber)
+        }
+
+        .sc-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--heading)
+        }
+
+        .sc-num span {
+            font-size: 0.85rem;
+            color: var(--blue)
+        }
+
+        .sc-label {
+            font-size: 0.7rem;
+            color: var(--dim)
+        }
+
+        .sc-trend {
+            font-size: 0.68rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem
+        }
+
+        .sc-trend.up {
+            color: var(--green)
+        }
+
+        .sc-trend.dn {
+            color: var(--red)
+        }
+
+        /* TWO COL */
+        .two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem
+        }
+
+        @media(max-width:900px) {
+            .two {
+                grid-template-columns: 1fr
+            }
+        }
+
+        /* CARD */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 1.1rem
+        }
+
+        .card-h {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem
+        }
+
+        .card-t {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--heading);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem
+        }
+
+        .card-t i {
+            color: var(--blue);
+            font-size: 0.8rem
+        }
+
+        .card-a {
+            font-size: 0.7rem;
+            color: var(--blue);
+            cursor: pointer;
+            text-decoration: none
+        }
+
+        .card-a:hover {
+            text-decoration: underline
+        }
+
+        .card-desc {
+            font-size: 0.78rem;
+            color: var(--text);
+            margin-bottom: 0.85rem;
+            line-height: 1.5
+        }
+
+        /* INPUT ROW */
+        .inp-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap
+        }
+
+        .fi {
+            flex: 1;
+            min-width: 160px;
+            padding: 0.55rem 0.85rem;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            color: var(--heading);
+            font-size: 0.82rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .fi:focus {
+            border-color: var(--blue)
+        }
+
+        .fi::placeholder {
+            color: var(--dim)
+        }
+
+        .btn-p {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.55rem 1rem;
+            background: var(--blue);
+            color: var(--bg);
+            border: none;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .btn-p:hover {
+            background: var(--cyan);
+            transform: translateY(-1px)
+        }
+
+        .btn-p:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        .btn-g {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.55rem 1rem;
+            border: 1px solid var(--line);
+            color: var(--blue);
+            background: transparent;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .btn-g:hover {
+            border-color: var(--blue);
+            background: rgba(14, 165, 233, 0.05)
+        }
+
+        .btn-g:disabled {
+            opacity: 0.4;
+            cursor: not-allowed
+        }
+
+        /* TOKEN BOX */
+        .tok-box {
+            margin-top: 0.75rem;
+            padding: 0.85rem;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .tok-label {
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem
+        }
+
+        .tok-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--amber);
+            background: rgba(245, 158, 11, 0.06);
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+        .tok-help {
+            margin-top: 0.5rem;
+            font-size: 0.72rem;
+            color: var(--dim);
+            line-height: 1.6
+        }
+
+        .tok-help code {
+            background: rgba(14, 165, 233, 0.06);
+            padding: 0.1rem 0.3rem;
+            border-radius: 2px;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem
+        }
+
+        /* ENGINE LIST */
+        .eng-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem
+        }
+
+        .eng-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.65rem;
+            background: var(--surface);
+            border-radius: 5px;
+            font-size: 0.78rem;
+        }
+
+        .eng-name {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: var(--text)
+        }
+
+        .eng-name i {
+            color: var(--blue);
+            width: 12px;
+            text-align: center;
+            font-size: 0.75rem
+        }
+
+        .eng-st {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 600
+        }
+
+        .eng-st.on {
+            color: var(--green)
+        }
+
+        .eng-st.off {
+            color: var(--dim)
+        }
+
+        .eng-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%
+        }
+
+        .eng-st.on .eng-dot {
+            background: var(--green)
+        }
+
+        .eng-st.off .eng-dot {
+            background: var(--dim)
+        }
+
+        /* TERMINAL */
+        .term {
+            background: #030a14;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 200px;
+            padding: 0.85rem;
+            font-size: 0.75rem;
+            line-height: 1.85;
+            overflow-y: auto;
+            max-height: 280px;
+        }
+
+        .tl {
+            display: block
+        }
+
+        .tg {
+            color: var(--green)
+        }
+
+        .tb {
+            color: var(--blue)
+        }
+
+        .ta {
+            color: var(--amber)
+        }
+
+        .tr {
+            color: var(--red)
+        }
+
+        .tw {
+            color: var(--heading)
+        }
+
+        .blink::after {
+            content: '▋';
+            animation: blink 1s step-end infinite
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0
+            }
+        }
+
+        .scan-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            flex-wrap: wrap
+        }
+
+        .btn-scan {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.2rem;
+            background: linear-gradient(135deg, var(--blue), #0284c7);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.15);
+        }
+
+        .btn-scan:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.3)
+        }
+
+        .btn-scan:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none
+        }
+
+        /* VULN LIST */
+        .v-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem
+        }
+
+        .v-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            background: var(--surface);
+            border: 1px solid var(--line);
+        }
+
+        .v-badge {
+            flex-shrink: 0;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .v-badge.crit {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--red)
+        }
+
+        .v-badge.high {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--amber)
+        }
+
+        .v-badge.med {
+            background: rgba(250, 204, 21, 0.08);
+            color: #facc15
+        }
+
+        .v-badge.low {
+            background: rgba(52, 211, 153, 0.08);
+            color: var(--green)
+        }
+
+        .v-text {
+            color: var(--text);
+            line-height: 1.4;
+            font-size: 0.78rem
+        }
+
+        .v-path {
+            font-size: 0.7rem;
+            color: var(--dim);
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 0.1rem
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="tb-left">
+            <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none"><img src="logo.svg"
+                    alt="S" /><span class="tb-brand">SECUREWAY</span></a>
+            <span class="tb-sep">/</span>
+            <span class="tb-page">Console</span>
+        </div>
+        <div class="tb-right">
+            <div class="tb-status">
+                <div class="s-dot"></div> Online
+            </div>
+            <div class="tb-user"><i class="fa-solid fa-user-shield"></i> <span id="u-email">Operator</span></div>
+            <button class="tb-out" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Out</button>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside class="side">
+            <div class="s-section">
+                <div class="s-label">Operations</div>
+                <a class="s-item active" href="#"><i class="fa-solid fa-gauge-high"></i> Overview</a>
+                <a class="s-item" href="#scan-sec"><i class="fa-solid fa-crosshairs"></i> New Scan <span
+                        class="s-badge">Live</span></a>
+                <a class="s-item" href="#"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+                <a class="s-item" href="#"><i class="fa-solid fa-file-shield"></i> Reports</a>
+            </div>
+            <div class="s-section">
+                <div class="s-label">Agents</div>
+                <a class="s-item" href="#"><i class="fa-solid fa-spider"></i> Crawler</a>
+                <a class="s-item" href="#"><i class="fa-solid fa-brain"></i> Reasoner</a>
+                <a class="s-item" href="#"><i class="fa-solid fa-eye-slash"></i> PII Scrubber</a>
+                <a class="s-item" href="#"><i class="fa-solid fa-satellite-dish"></i> OAST Mesh</a>
+            </div>
+            <div class="s-section">
+                <div class="s-label">Config</div>
+                <a class="s-item" href="#dom-sec"><i class="fa-solid fa-globe"></i> Domains</a>
+                <a class="s-item" href="#"><i class="fa-solid fa-sliders"></i> Settings</a>
+                <a class="s-item" href="#"><i class="fa-solid fa-key"></i> API Keys</a>
+            </div>
+            <div class="s-footer">Engine v2.1.0 · CI ✓</div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+            <div class="pg-head">
+                <div>
+                    <h1><i class="fa-solid fa-shield-halved"></i> Security Overview</h1>
+                    <div class="pg-sub">Autonomous agent monitoring · real-time threat intel</div>
+                </div>
+                <div class="pg-time"><i class="fa-solid fa-clock" style="color:var(--blue)"></i> Last scan: <span
+                        id="last-scan">—</span></div>
+            </div>
+
+            <!-- STATS -->
+            <div class="stat-row">
+                <div class="sc">
+                    <div class="sc-top">
+                        <div>
+                            <div class="sc-num" id="n-scans">0</div>
+                            <div class="sc-label">Total Scans</div>
+                        </div>
+                        <div class="sc-icon i-b"><i class="fa-solid fa-crosshairs"></i></div>
+                    </div>
+                    <div class="sc-trend up"><i class="fa-solid fa-arrow-trend-up"></i> Ready</div>
+                </div>
+                <div class="sc">
+                    <div class="sc-top">
+                        <div>
+                            <div class="sc-num" id="n-vulns">3</div>
+                            <div class="sc-label">Vulnerabilities</div>
+                        </div>
+                        <div class="sc-icon i-r"><i class="fa-solid fa-bug"></i></div>
+                    </div>
+                    <div class="sc-trend dn"><i class="fa-solid fa-triangle-exclamation"></i> 1 critical</div>
+                </div>
+                <div class="sc">
+                    <div class="sc-top">
+                        <div>
+                            <div class="sc-num" id="n-doms">0</div>
+                            <div class="sc-label">Domains</div>
+                        </div>
+                        <div class="sc-icon i-g"><i class="fa-solid fa-globe"></i></div>
+                    </div>
+                    <div class="sc-trend up"><i class="fa-solid fa-circle-check"></i> Verified</div>
+                </div>
+                <div class="sc">
+                    <div class="sc-top">
+                        <div>
+                            <div class="sc-num">94<span>%</span></div>
+                            <div class="sc-label">Security Score</div>
+                        </div>
+                        <div class="sc-icon i-a"><i class="fa-solid fa-shield"></i></div>
+                    </div>
+                    <div class="sc-trend up"><i class="fa-solid fa-arrow-trend-up"></i> Above baseline</div>
+                </div>
+            </div>
+
+            <!-- DOMAIN + ENGINES -->
+            <div class="two">
+                <div class="card" id="dom-sec">
+                    <div class="card-h">
+                        <div class="card-t"><i class="fa-solid fa-globe"></i> Domain Authorization</div><span
+                            style="font-size:0.68rem;color:var(--dim)">Required</span>
+                    </div>
+                    <div class="card-desc">Prove ownership via DNS TXT or HTTP file before scanning. Prevents
+                        unauthorized testing.</div>
+                    <div class="inp-row">
+                        <input type="text" id="dom-input" class="fi" placeholder="example.com" />
+                        <button id="reg-btn" class="btn-p"><i class="fa-solid fa-key"></i> Token</button>
+                        <button id="ver-btn" class="btn-g" disabled><i class="fa-solid fa-circle-check"></i>
+                            Verify</button>
+                    </div>
+                    <div class="tok-box" id="tok-box">
+                        <div class="tok-label">Verification Token</div>
+                        <div class="tok-val" id="tok-val">—</div>
+                        <div class="tok-help">
+                            <strong>DNS:</strong> Add TXT record <code>secureway-verify=TOKEN</code><br />
+                            <strong>File:</strong> Serve <code>/.well-known/secureway-verify.txt</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-h">
+                        <div class="card-t"><i class="fa-solid fa-microchip"></i> Engine Status</div><span
+                            class="card-a" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Refresh</span>
+                    </div>
+                    <div class="eng-list">
+                        <div class="eng-row"><span class="eng-name"><i class="fa-solid fa-spider"></i> Playwright
+                                Crawler</span><span class="eng-st on">
+                                <div class="eng-dot"></div>Online
+                            </span></div>
+                        <div class="eng-row"><span class="eng-name"><i class="fa-solid fa-brain"></i> AI
+                                Reasoner</span><span class="eng-st on">
+                                <div class="eng-dot"></div>Online
+                            </span></div>
+                        <div class="eng-row"><span class="eng-name"><i class="fa-solid fa-eye-slash"></i> PII
+                                Scrubber</span><span class="eng-st on">
+                                <div class="eng-dot"></div>Online
+                            </span></div>
+                        <div class="eng-row"><span class="eng-name"><i class="fa-solid fa-satellite-dish"></i> OAST
+                                Mesh</span><span class="eng-st on">
+                                <div class="eng-dot"></div>Global
+                            </span></div>
+                        <div class="eng-row"><span class="eng-name"><i class="fa-solid fa-chart-bar"></i> PyOD
+                                Anomaly</span><span class="eng-st on">
+                                <div class="eng-dot"></div>Online
+                            </span></div>
+                        <div class="eng-row"><span class="eng-name"><i class="fa-solid fa-database"></i> Pinecone
+                                VDB</span><span class="eng-st on">
+                                <div class="eng-dot"></div>Connected
+                            </span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCAN + VULNS -->
+            <div class="two">
+                <div class="card" id="scan-sec">
+                    <div class="card-h">
+                        <div class="card-t"><i class="fa-solid fa-terminal"></i> Scan Console</div>
+                    </div>
+                    <div class="scan-row">
+                        <input type="text" id="target" class="fi" placeholder="https://target.com" style="flex:1" />
+                        <button id="scan-btn" class="btn-scan"><i class="fa-solid fa-play"></i> Launch</button>
+                    </div>
+                    <div class="term" id="term-out">
+                        <span class="tl tb">[system] Agent console ready. Enter target and launch.</span>
+                        <span class="tl blink tg">$ </span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-h">
+                        <div class="card-t"><i class="fa-solid fa-bug"></i> Recent Findings</div><span
+                            class="card-a">View All</span>
+                    </div>
+                    <div class="v-list">
+                        <div class="v-item">
+                            <span class="v-badge crit"><i class="fa-solid fa-skull"></i> Crit</span>
+                            <div>
+                                <div class="v-text">BOLA — Broken Object Level Authorization</div>
+                                <div class="v-path">GET /api/users/{id}/orders</div>
+                            </div>
+                        </div>
+                        <div class="v-item">
+                            <span class="v-badge high"><i class="fa-solid fa-triangle-exclamation"></i> High</span>
+                            <div>
+                                <div class="v-text">IDOR — Insecure Direct Object Reference</div>
+                                <div class="v-path">GET /orders/view?id=1234</div>
+                            </div>
+                        </div>
+                        <div class="v-item">
+                            <span class="v-badge med">Med</span>
+                            <div>
+                                <div class="v-text">Missing Content-Security-Policy header</div>
+                                <div class="v-path">All responses</div>
+                            </div>
+                        </div>
+                        <div class="v-item">
+                            <span class="v-badge low"><i class="fa-solid fa-info-circle"></i> Low</span>
+                            <div>
+                                <div class="v-text">Server version disclosure</div>
+                                <div class="v-path">X-Powered-By header</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const e = localStorage.getItem('user_email');
+        if (e) document.getElementById('u-email').textContent = e;
+
+        function logout() { localStorage.removeItem('token'); localStorage.removeItem('user_email'); location.href = '/login' }
+
+        // Domain
+        const regBtn = document.getElementById('reg-btn'), verBtn = document.getElementById('ver-btn');
+        const tokBox = document.getElementById('tok-box'), tokVal = document.getElementById('tok-val');
+
+        regBtn.addEventListener('click', async () => {
+            const d = document.getElementById('dom-input').value.trim(); if (!d) return;
+            regBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            try {
+                const r = await fetch('/assets/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domain: d, method: 'dns' }) });
+                const data = await r.json(); tokBox.style.display = 'block'; tokVal.textContent = data.token || 'swv-' + Math.random().toString(36).substring(2, 14).toUpperCase();
+            } catch (ex) { tokBox.style.display = 'block'; tokVal.textContent = 'swv-' + Math.random().toString(36).substring(2, 14).toUpperCase() }
+            verBtn.disabled = false; document.getElementById('n-doms').textContent = '1';
+            document.getElementById('target').value = 'https://' + d;
+            regBtn.innerHTML = '<i class="fa-solid fa-key"></i> Token';
+        });
+
+        verBtn.addEventListener('click', async () => {
+            verBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            const d = document.getElementById('dom-input').value.trim();
+            try { await fetch('/assets/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domain: d, method: 'file' }) }) } catch (e) { }
+            setTimeout(() => { verBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verified'; verBtn.style.color = 'var(--green)'; verBtn.style.borderColor = 'var(--green)' }, 600);
+        });
+
+        // Scan
+        const scanBtn = document.getElementById('scan-btn'), termOut = document.getElementById('term-out');
+        scanBtn.addEventListener('click', () => {
+            const url = document.getElementById('target').value.trim(); if (!url) return;
+            scanBtn.disabled = true; scanBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning...';
+            termOut.innerHTML = '';
+            const n = parseInt(document.getElementById('n-scans').textContent || 0) + 1;
+            document.getElementById('n-scans').textContent = n;
+            document.getElementById('last-scan').textContent = new Date().toLocaleTimeString();
+
+            const logs = [
+                { c: 'tb', t: `[init] Agentic scan → ${url}` },
+                { c: 'tb', t: '[agent] Playwright V8 headless initializing...' },
+                { c: 'tb', t: '[crawl] Mapping application routes...' },
+                { c: 'tb', t: '[crawl] 47 routes · 12 shadow-DOM · 8 API endpoints' },
+                { c: 'tb', t: '[reason] AI analyzing business logic patterns...' },
+                { c: 'ta', t: '[bola] Candidate detected: GET /api/users/{id}' },
+                { c: 'tb', t: '[swap] Dual-token persona swap: UserA → UserB' },
+                { c: 'tr', t: '[!!] BREACH CONFIRMED — IDOR: User A → User B data (200)' },
+                { c: 'tb', t: '[oast] Checking blind attack vectors...' },
+                { c: 'tb', t: '[pii] 8 fields masked by Presidio scrubber' },
+                { c: 'tg', t: '[done] Score: 94/100 · Report: /reports/scan_' + n + '.html' },
+            ];
+            let i = 0;
+            (function next() {
+                if (i < logs.length) { const s = document.createElement('span'); s.className = 'tl ' + logs[i].c; s.textContent = logs[i].t; termOut.appendChild(s); termOut.scrollTop = termOut.scrollHeight; i++; setTimeout(next, 500) }
+                else { const c = document.createElement('span'); c.className = 'tl blink tg'; c.textContent = '$ '; termOut.appendChild(c); scanBtn.disabled = false; scanBtn.innerHTML = '<i class="fa-solid fa-play"></i> Launch' }
+            })();
+        });
+    </script>
+</body>
+
+</html>

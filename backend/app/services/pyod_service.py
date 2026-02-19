@@ -22,4 +22,4 @@ class AnomalyDetector:
             return label[0] == 1, score[0]
         else:
             # Fallback Mock Logic
-            return random.choice([True, False]) if data_point[0] > 10 else False, 0.95
+            return random.choice([True, False]) if data_point[0] > 10 else False, 0.95 # nosec

@@ -13,12 +13,14 @@ from app.services.gemini_service import LogicReasoner
 from app.services.playwright_service import PlaywrightService
 from app.services.pyod_service import AnomalyDetector
 from app.services.oast_service import OASTService
+from app.services.pipeline_service import PipelineService
 
 # Initialize Logic Engines
 scrubber = PiiScrubber()
 reasoner = LogicReasoner()
 anomaly = AnomalyDetector()
 oast = OASTService()
+pipeline_service = PipelineService(root_dir=".")
 
 class SecureWayMCPServer:
     def __init__(self):
@@ -26,7 +28,8 @@ class SecureWayMCPServer:
             "scrub_pii": self.scrub_pii,
             "analyze_logic": self.analyze_logic,
             "detect_anomaly": self.detect_anomaly,
-            "crawl_shadow_dom": self.crawl_shadow_dom
+            "crawl_shadow_dom": self.crawl_shadow_dom,
+            "run_ci_pipeline": self.run_ci_pipeline
         }
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger("secureway-mcp")
@@ -66,6 +69,15 @@ class SecureWayMCPServer:
     async def crawl_shadow_dom(self, url: str) -> Dict[str, Any]:
         """Crawls URL using Headless V8 to map Shadow DOM."""
         return await PlaywrightService.crawl_shadow_dom(url)
+
+    async def run_ci_pipeline(self) -> Dict[str, Any]:
+        """Runs the complete CI/CD pipeline (Security, Tests, Auto-Fix)."""
+        result = pipeline_service.execute()
+        return {
+            "pipeline_status": "Success" if result["success"] else "Failure",
+            "report": result["report"],
+            "auto_fixes_applied": "Check logs for details"
+        }
 
 if __name__ == "__main__":
     server = SecureWayMCPServer()
