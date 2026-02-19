@@ -22,6 +22,11 @@ const app = {
         app.state.intervals = []; // Reset
     },
 
+    generateVerificationToken: () => {
+        const part = () => Math.random().toString(16).slice(2, 10) + Date.now().toString(16).slice(-4);
+        return `secureway-verification=${part()}-${part()}`;
+    },
+
     validTabs: [
         { id: 'overview', label: 'Overview', icon: 'shield-check' },
         { id: 'agentic', label: 'Agentic Discovery', icon: 'activity' },
@@ -368,7 +373,7 @@ const app = {
         const tokenEl = document.getElementById('verification-token');
 
         const defaultDomain = 'demo.secureway.ai';
-        const tokenValue = `secureway-verification=${Math.random().toString(16).slice(2, 10)}-${Math.random().toString(16).slice(2, 10)}`;
+        const tokenValue = app.generateVerificationToken();
 
         if (domainInput) domainInput.value = defaultDomain;
         if (domainDisplay) domainDisplay.textContent = defaultDomain;

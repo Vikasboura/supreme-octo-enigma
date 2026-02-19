@@ -6,13 +6,15 @@ import random
 import asyncio
 import requests
 
-# Import OpenRouter Service
+# Import Services
 from app.services.openrouter_service import OpenRouterReasoner
+from app.services.mcp_kali_service import McpKaliService
 
 router = APIRouter()
 
 # Initialize Services
 reasoner = OpenRouterReasoner()
+mcp_kali = McpKaliService()
 
 # --- Simple Mock Endpoints for Prototype ---
 
@@ -111,6 +113,15 @@ class DomainVerificationRequest(BaseModel):
 
 verified_domains: set[str] = set()
 
+
+def _require_authorized() -> None:
+    """Ensure at least one domain has been verified before allowing operations."""
+    if not verified_domains:
+        raise HTTPException(
+            status_code=403,
+            detail="SecureWay is not authorized for any domain. Complete Authorized Framework verification first.",
+        )
+
 @router.get("/")
 async def root():
     """Root endpoint - system status"""
@@ -140,6 +151,8 @@ async def docs():
 async def start_scan(request: ScanRequest):
     """Start a security scan - only for verified domains"""
 
+    _require_authorized()
+
     # Very simple gating: require the exact URL host to be in verified_domains
     from urllib.parse import urlparse
 
@@ -167,6 +180,7 @@ async def start_scan(request: ScanRequest):
 @router.get("/scan/{scan_id}/status")
 async def scan_status(scan_id: str):
     """Get scan status"""
+    _require_authorized()
     progress = random.randint(10, 100)
     threats = []
     
@@ -193,6 +207,7 @@ async def scan_status(scan_id: str):
 @router.post("/privacy/scrub")
 async def scrub_pii(request: ScrubRequest):
     """Scrub PII from text"""
+    _require_authorized()
     text = request.text
     # Simple mock PII scrubbing
     redacted = text.replace("john.doe@example.com", "[EMAIL_REDACTED]")
@@ -207,6 +222,7 @@ async def scrub_pii(request: ScrubRequest):
 @router.post("/analyze/bola")
 async def analyze_bola(request: BolaAnalysisRequest):
     """Analyze BOLA/IDOR vulnerability using OpenRouter AI"""
+    _require_authorized()
     result = await reasoner.analyze_bole_flaw(request.endpoint, request.user_id)
     return result
 
@@ -270,8 +286,15 @@ async def verify_domain(request: DomainVerificationRequest):
     }
 
 
+@router.get("/authorized/status")
+async def authorized_status():
+    return {"authorized": bool(verified_domains)}
+
+
 @router.post("/pipeline/analyze_code")
 async def analyze_code(request: CodeAnalysisRequest):
+    _require_authorized()
+
     result = _analyze_code_security(request.code, request.language)
 
     deploy_approved = False
@@ -284,4 +307,42 @@ async def analyze_code(request: CodeAnalysisRequest):
         "issues": result["issues"],
         "auto_deploy": request.auto_deploy,
         "deploy_approved": deploy_approved,
+    }
+
+
+class PortScanRequest(BaseModel):
+    target: str
+    fast: bool = True
+
+
+@router.post("/mcp/port_scan")
+async def mcp_port_scan(request: PortScanRequest):
+    """Run a port scan via the Docker-based Kali MCP server.
+
+    Returns either scan data or a structured error with an instant suggestion.
+    """
+
+    _require_authorized()
+
+    result = mcp_kali.port_scan(target=request.target, fast=request.fast)
+
+    if not result.get("ok"):
+        # Pass through a structured error the frontend can display nicely
+        return {
+            "success": False,
+            "error_type": result.get("error_type", "unknown"),
+            "message": result.get("message", "Unknown error while contacting Kali MCP server."),
+            "suggestion": result.get(
+                "suggestion",
+                "Check the secureway-mcp-kali container logs and network connectivity.",
+            ),
+        }
+
+    data = result.get("data", {})
+    return {
+        "success": True,
+        "target": data.get("target"),
+        "command": data.get("command"),
+        "exit_code": data.get("exit_code"),
+        "output": data.get("output"),
     }
