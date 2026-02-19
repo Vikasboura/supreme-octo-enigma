@@ -27,6 +27,7 @@ const app = {
         { id: 'agentic', label: 'Agentic Discovery', icon: 'activity' },
         { id: 'logic', label: 'Logic Lab', icon: 'bug' },
         { id: 'privacy', label: 'Privacy Shield', icon: 'brain-circuit' },
+        { id: 'attack-monitor', label: 'Attack Monitor', icon: 'radar' },
         { id: 'authorized', label: 'Authorized Framework', icon: 'fingerprint' }
     ],
 
@@ -68,6 +69,8 @@ const app = {
             if (viewId === 'agentic') app.initAgentic();
             if (viewId === 'logic') app.initLogic();
             if (viewId === 'privacy') app.initPrivacy();
+            if (viewId === 'authorized') app.initAuthorized();
+            if (viewId === 'attack-monitor') app.initAttackMonitor();
             lucide.createIcons();
         }, 0);
     },
@@ -357,20 +360,226 @@ const app = {
         };
         updateLogs();
     },
+    
+    // --- Authorized Framework Logic ---
+    initAuthorized: () => {
+        const domainInput = document.getElementById('domain-input');
+        const domainDisplay = document.getElementById('domain-display');
+        const tokenEl = document.getElementById('verification-token');
+
+        const defaultDomain = 'demo.secureway.ai';
+        const tokenValue = `secureway-verification=${Math.random().toString(16).slice(2, 10)}-${Math.random().toString(16).slice(2, 10)}`;
+
+        if (domainInput) domainInput.value = defaultDomain;
+        if (domainDisplay) domainDisplay.textContent = defaultDomain;
+        if (tokenEl) tokenEl.textContent = tokenValue;
+
+        if (domainInput && domainDisplay) {
+            domainInput.addEventListener('input', () => {
+                const val = domainInput.value.trim();
+                domainDisplay.textContent = val || defaultDomain;
+            });
+        }
+    },
+    
+    // --- Attack Monitor Logic ---
+    initAttackMonitor: () => {
+        const timeline = document.getElementById('attack-timeline');
+        const techniqueBadge = document.getElementById('attack-technique-badge');
+        const defenseBox = document.getElementById('defense-telemetry');
+
+        if (!timeline || !techniqueBadge || !defenseBox) return;
+
+        timeline.innerHTML = '';
+        defenseBox.innerHTML = '';
+
+        const steps = [
+            {
+                ts: 'T+0s',
+                technique: 'Reconnaissance',
+                mitre: 'TA0001',
+                detail: 'Scanner mapping public endpoints /health and /docs',
+                status: 'running'
+            },
+            {
+                ts: 'T+3s',
+                technique: 'BOLA / IDOR Probe',
+                mitre: 'T1190',
+                detail: 'Swapping object IDs in /api/orders/{id}',
+                status: 'queued'
+            },
+            {
+                ts: 'T+7s',
+                technique: 'SQL Injection Fuzz',
+                mitre: 'T1190',
+                detail: 'Injecting UNION SELECT payloads into query parameters',
+                status: 'queued'
+            },
+            {
+                ts: 'T+11s',
+                technique: 'Data Exfiltration Simulation',
+                mitre: 'TA0010',
+                detail: 'Attempting bulk export of /api/users dataset',
+                status: 'queued'
+            }
+        ];
+
+        const addDefenseEvent = (msg) => {
+            const row = document.createElement('div');
+            row.className = 'rounded border border-slate-800 bg-slate-950 px-3 py-2 flex items-start gap-2 text-[11px]';
+            row.innerHTML = `
+                <span class="mt-0.5 h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                <span class="text-slate-300">${msg}</span>
+            `;
+            defenseBox.appendChild(row);
+            defenseBox.scrollTop = defenseBox.scrollHeight;
+        };
+
+        const renderStep = (step, index) => {
+            const item = document.createElement('div');
+            const statusColor = step.status === 'running'
+                ? 'text-amber-400'
+                : step.status === 'blocked'
+                    ? 'text-red-400'
+                    : 'text-slate-500';
+
+            item.className = 'relative pl-6 border-l border-slate-800 pb-3 last:border-l-0';
+            item.innerHTML = `
+                <div class="absolute -left-[4px] top-1 h-2 w-2 rounded-full ${step.status === 'blocked' ? 'bg-red-500' : 'bg-cyan-400'} shadow-[0_0_10px_rgba(34,211,238,0.7)]"></div>
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-500">${step.ts} • MITRE ${step.mitre}</span>
+                        <span class="text-xs font-semibold text-slate-100">${step.technique}</span>
+                    </div>
+                    <span class="text-[10px] font-mono uppercase ${statusColor}">${step.status}</span>
+                </div>
+                <p class="mt-1 text-[11px] text-slate-300">${step.detail}</p>
+            `;
+            timeline.appendChild(item);
+            timeline.scrollTop = timeline.scrollHeight;
+
+            if (index === 0 && techniqueBadge) {
+                techniqueBadge.textContent = 'Reconnaissance';
+                techniqueBadge.classList.remove('text-slate-400');
+                techniqueBadge.classList.add('text-cyan-400');
+            }
+        };
+
+        let delay = 400;
+        steps.forEach((step, index) => {
+            const t = setTimeout(() => {
+                step.status = index === steps.length - 1 ? 'blocked' : 'running';
+                renderStep(step, index);
+
+                if (index === 1) {
+                    addDefenseEvent('SecureWay logic engine detected abnormal object ID pattern (BOLA heuristic).');
+                }
+                if (index === 2) {
+                    addDefenseEvent('Rust packet engine flagged SQLi payload signature, route put into quarantine.');
+                }
+                if (index === 3) {
+                    addDefenseEvent('Outbound data exfiltration attempt blocked; response rewritten with redacted payload.');
+                    if (techniqueBadge) techniqueBadge.textContent = 'Attack Blocked';
+                }
+            }, delay);
+            app.state.intervals.push(t);
+            delay += 2200;
+        });
+    },
+
+    restartAttackSimulation: () => {
+        app.clearIntervals();
+        app.initAttackMonitor();
+    },
 
     verifyDomain: () => {
         const btn = document.getElementById('verify-btn');
+        const domainInput = document.getElementById('domain-input');
+        const statusBadge = document.getElementById('domain-status-badge');
+        const tokenEl = document.getElementById('verification-token');
+
         if (!btn) return;
 
+        const domain = domainInput && domainInput.value.trim();
+        const token = tokenEl && tokenEl.textContent ? tokenEl.textContent.trim() : '';
+        if (!domain) {
+            alert('Please enter a domain to verify.');
+            return;
+        }
+
+        if (!token) {
+            alert('Verification token missing. Reload the page and try again.');
+            return;
+        }
+
+        btn.disabled = true;
         btn.innerHTML = `<i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i> Checking...`;
+        if (statusBadge) {
+            statusBadge.textContent = 'Checking';
+            statusBadge.classList.remove('text-amber-400');
+            statusBadge.classList.add('text-cyan-400');
+        }
         lucide.createIcons();
 
-        setTimeout(() => {
-            btn.classList.remove('bg-cyan-600', 'hover:bg-cyan-500');
-            btn.classList.add('bg-green-600', 'hover:bg-green-500', 'cursor-default');
-            btn.innerHTML = `<i data-lucide="check-circle" class="h-5 w-5"></i> Verified Successfully`;
-            lucide.createIcons();
-        }, 2000);
+        // Call backend to actually mark domain as verified
+        fetch('http://localhost:8000/authorized/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ domain, token }),
+        })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data.detail || 'Verification failed.');
+                }
+                return res.json();
+            })
+            .then(() => {
+                btn.classList.remove('bg-cyan-600', 'hover:bg-cyan-500');
+                btn.classList.add('bg-green-600', 'hover:bg-green-500', 'cursor-default');
+                btn.innerHTML = `<i data-lucide="check-circle" class="h-5 w-5"></i> Verified Successfully`;
+
+                if (statusBadge) {
+                    statusBadge.textContent = 'Verified';
+                    statusBadge.classList.remove('text-cyan-400');
+                    statusBadge.classList.add('text-green-400');
+                }
+
+                lucide.createIcons();
+            })
+            .catch((err) => {
+                console.error(err);
+                alert(err.message || 'Domain verification failed. Please try again.');
+
+                btn.disabled = false;
+                btn.innerHTML = 'Verify Ownership';
+
+                if (statusBadge) {
+                    statusBadge.textContent = 'Not Verified';
+                    statusBadge.classList.remove('text-cyan-400', 'text-green-400');
+                    statusBadge.classList.add('text-amber-400');
+                }
+                lucide.createIcons();
+            });
+    },
+
+    downloadVerificationFile: () => {
+        const tokenEl = document.getElementById('verification-token');
+        const content = tokenEl && tokenEl.textContent ? tokenEl.textContent.trim() : '';
+        if (!content) {
+            alert('Verification token missing. Reload the page and try again.');
+            return;
+        }
+
+        const blob = new Blob([content + '\n'], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'secureway.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 };
 

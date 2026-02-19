@@ -103,7 +103,7 @@
     <!-- Sidebar -->
     <aside class="flex h-screen w-64 flex-col border-r border-slate-800 bg-slate-950/50 backdrop-blur-xl shrink-0">
         <div class="flex h-16 items-center border-b border-slate-800 px-6">
-            <i data-lucide="lock" class="mr-2 h-6 w-6 text-cyan-400"></i>
+            <img src="logo.jpg" alt="SecureWay" class="mr-2 h-8 w-8 object-contain" />
             <span class="text-lg font-bold tracking-wider text-slate-100">SECUREWAY</span>
         </div>
 
@@ -384,43 +384,96 @@
 
     <template id="view-authorized">
         <div class="space-y-8 fade-in flex flex-col items-center justify-center h-full"> 
-             <div class="nx-card max-w-2xl w-full p-8 rounded-xl backdrop-blur-xl bg-slate-900/80 border border-slate-700">
-                <div class="mb-8 flex flex-col items-center text-center">
-                    <div class="mb-4 rounded-full bg-cyan-500/10 p-4 ring-1 ring-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-                       <i data-lucide="file-check" class="h-10 w-10 text-cyan-400"></i>
+            <div class="nx-card max-w-2xl w-full p-8 rounded-xl backdrop-blur-xl bg-slate-900/80 border border-slate-700">
+                <div class="mb-6 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-full bg-cyan-500/10 p-3 ring-1 ring-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+                            <i data-lucide="file-check" class="h-6 w-6 text-cyan-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-100">Domain Ownership Verification</h2>
+                            <p class="mt-1 text-xs text-slate-400">Link SecureWay to your production domain before enabling autonomous scans.</p>
+                        </div>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-100">Domain Ownership Verification</h2>
-                    <p class="mt-2 text-sm text-slate-400">
-                       To prevent unauthorized scanning, please verify you own <span class="font-mono text-slate-200 bg-slate-800 px-2 py-0.5 rounded">demo.secureway.ai</span>
-                    </p>
+                    <span id="domain-status-badge" class="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-amber-400">
+                        Not Verified
+                    </span>
                 </div>
 
-                <div class="mb-8 grid grid-cols-2 gap-4">
-                    <button class="flex flex-col items-center justify-center gap-2 rounded-lg border border-cyan-500 bg-cyan-500/10 p-4 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.1)] transition-transform hover:scale-[1.02]">
-                       <i data-lucide="server" class="h-6 w-6"></i>
-                       <span class="text-xs font-semibold">DNS Record</span>
-                    </button>
-                    <button class="flex flex-col items-center justify-center gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-slate-500 hover:bg-slate-900 hover:text-slate-300 transition-colors">
-                       <i data-lucide="upload-cloud" class="h-6 w-6"></i>
-                       <span class="text-xs font-semibold">HTML File Upload</span>
-                    </button>
-                 </div>
+                <div class="mb-6 space-y-2">
+                    <label for="domain-input" class="block text-xs font-medium text-slate-300">Target Domain</label>
+                    <input id="domain-input" type="text" placeholder="demo.secureway.ai" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/40" />
+                    <p class="text-[11px] text-slate-500">SecureWay will only run active attacks against verified domains.</p>
+                </div>
 
-                 <div class="mb-8 rounded-lg bg-slate-950 p-5 font-mono text-xs text-slate-400 border border-slate-800 shadow-inner">
+                <div class="mb-6 grid grid-cols-2 gap-4">
+                    <button class="flex flex-col items-center justify-center gap-2 rounded-lg border border-cyan-500 bg-cyan-500/10 p-4 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.1)] transition-transform hover:scale-[1.02]">
+                        <i data-lucide="server" class="h-6 w-6"></i>
+                        <span class="text-xs font-semibold">DNS Record</span>
+                    </button>
+                    <button onclick="app.downloadVerificationFile()" class="flex flex-col items-center justify-center gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-slate-500 hover:bg-slate-900 hover:text-slate-300 transition-colors">
+                        <i data-lucide="download" class="h-6 w-6"></i>
+                        <span class="text-xs font-semibold">Download File</span>
+                    </button>
+                </div>
+
+                <div class="mb-6 rounded-lg bg-slate-950 p-5 font-mono text-xs text-slate-400 border border-slate-800 shadow-inner">
                     <div class="space-y-3">
                         <p class="text-slate-500 uppercase tracking-widest text-[10px] font-bold">Instruction</p>
-                       <p>Add the following TXT record to your DNS configuration:</p>
-                       <div class="flex items-center justify-between rounded border border-slate-800 bg-slate-900 px-4 py-3 text-slate-200">
-                          <span class="select-all">secureway-verification=9283-akjhe-1928</span>
-                          <button class="text-xs text-cyan-500 hover:text-cyan-400 font-semibold uppercase tracking-wider">Copy</button>
-                       </div>
+                        <p>Add the following TXT record to your DNS configuration for <span id="domain-display" class="font-semibold text-slate-200">demo.secureway.ai</span> or place the downloaded <span class="text-slate-200">secureway.txt</span> file at <span class="text-slate-200">/.well-known/secureway.txt</span> on your domain:</p>
+                        <div class="flex items-center justify-between rounded border border-slate-800 bg-slate-900 px-4 py-3 text-slate-200">
+                            <span id="verification-token" class="select-all">secureway-verification=loading...</span>
+                            <button class="text-xs text-cyan-500 hover:text-cyan-400 font-semibold uppercase tracking-wider">Copy</button>
+                        </div>
                     </div>
-                 </div>
-                 
-                 <button onclick="app.verifyDomain()" id="verify-btn" class="group flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 py-3 font-bold text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all">
+                </div>
+
+                <button onclick="app.verifyDomain()" id="verify-btn" class="group flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 py-3 font-bold text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all">
                     <span>Verify Ownership</span>
-                 </button>
-             </div>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <template id="view-attack-monitor">
+        <div class="space-y-6 fade-in h-full flex flex-col">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-100">Attack Monitor</h1>
+                    <p class="mt-1 text-sm text-slate-400">Live view of simulated attacks, techniques, and backend responses.</p>
+                </div>
+                <button id="attack-replay-btn" onclick="app.restartAttackSimulation()" class="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition-colors">
+                    <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+                    <span>Replay Scenario</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 flex-1 min-h-0">
+                <div class="col-span-2 nx-card rounded-xl p-6 flex flex-col">
+                    <div class="mb-4 flex items-center justify-between">
+                        <h3 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-300">
+                            <i data-lucide="radar" class="h-4 w-4 text-cyan-400"></i>
+                            Live Attack Timeline
+                        </h3>
+                        <span id="attack-technique-badge" class="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                            Idle
+                        </span>
+                    </div>
+                    <div id="attack-timeline" class="flex-1 overflow-y-auto space-y-3 pr-2 text-xs font-mono text-slate-300">
+                        <!-- Attack steps injected by JS -->
+                    </div>
+                </div>
+
+                <div class="col-span-1 nx-card rounded-xl p-6 flex flex-col">
+                    <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-300">
+                        <i data-lucide="shield" class="h-4 w-4 text-green-400"></i>
+                        Defense Telemetry
+                    </h3>
+                    <div class="space-y-3 text-xs font-mono text-slate-300" id="defense-telemetry">
+                        <!-- Defense events injected by JS -->
+                    </div>
+                </div>
+            </div>
         </div>
     </template>
 
