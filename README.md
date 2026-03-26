@@ -1,14 +1,15 @@
 <div align="center">
   <h1>🔐 SECUREWAY</h1>
   <p><b>The Phase 0 Cognitive Security Logic Engine</b></p>
-  <p><i>Developed for India Innovation 2026 Hackathon</i></p>
+  <p><i>Developed for India Innovation 2026 Hackathon Showcase</i></p>
   <br/>
   <p>
     <img src="https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python" />
     <img src="https://img.shields.io/badge/Django-5.x-green?style=for-the-badge&logo=django" />
     <img src="https://img.shields.io/badge/PyTorch-LSTM-red?style=for-the-badge&logo=pytorch" />
-    <img src="https://img.shields.io/badge/TailwindCSS-Luxury_Cream-teal?style=for-the-badge&logo=tailwind-css" />
+    <img src="https://img.shields.io/badge/TailwindCSS-Luxury_Technical-teal?style=for-the-badge&logo=tailwind-css" />
     <img src="https://img.shields.io/badge/Celery_Redis-Async-darkred?style=for-the-badge&logo=redis" />
+    <img src="https://img.shields.io/badge/MCP-Protocol-purple?style=for-the-badge" />
   </p>
 </div>
 
@@ -18,112 +19,117 @@
 
 **SECUREWAY** is an advanced, autonomous web application security platform. Unlike traditional scanners that rely on static regex patterns and basic payloads, SECUREWAY operates as a **Cognitive Security Agent**. It understands the *intention* and *business logic* of modern web applications, effectively mimicking a human red-team operator.
 
-Presented in an exclusive **"Luxury Technical" Ivory/Tan aesthetic**, the platform delivers unparalleled user experience. Our engine autonomously maps complex Shadow DOMs, correlates network responses to discover Business Object Level Authorization (BOLA) flaws, verifies Server-Side Request Forgery (SSRF) via Out-of-Band (OAST) networks, and provides dynamic, self-healing mitigation patches.
+Presented in an exclusive **"Luxury Technical" Ivory/Tan aesthetic**, the platform delivers an elite user experience. Our engine autonomously maps complex Shadow DOMs, correlates network responses to discover Business Object Level Authorization (BOLA) flaws, verifies Server-Side Request Forgery (SSRF) via Out-of-Band (OAST) networks, and provides dynamic, self-healing mitigation patches.
 
 ---
 
-## 🏆 Hackathon Demo Features (Working vs. Roadmap)
+## �️ Technical Stack (Comprehensive)
 
-### ✅ Fully Implemented & Working for Demo
-*   **Authentication & Protected Routing**: Secure login/registration flows. Routes like `/features/` are intelligently protected requiring active sessions.
-*   **Luxury Cream UI/UX**: Completely bespoke frontend styled with Tailwind CSS, featuring glassmorphism, precise typography, overflow-protected data tables, and an interactive theme toggler.
-*   **Fast-Track Domain Verification**: Administrators can register and instantly verify external domains to orchestrate immediate scanning without tedious DNS waiting periods.
-*   **Dynamic Shadow Map Graphing**: The logic map dynamically generates dense network clusters (35+ nodes) client-side using mathematical SVG plotting, visualizing the spider's exact pathing.
-*   **Anomaly Prediction Dashboard**: Real-time rendering of outlier scores utilizing exact mathematical offsets for circle-graph animations.
-*   **BOLA & Threat Intelligence Analytics**: Interfaces that report generated exploit variants and logic-flaw scores.
-*   **API/Environment Context Loading**: `.env` configurations are automatically piped directly into Django on startup ensuring LLM API keys (OpenAI/OpenRouter) are safely managed.
-*   **Contact & Support Infrastructure**: Integrated communication routes linking directly to our Elite Operational Command.
+### **Backend Infrastructure**
+*   **Core Logic Server**: **Django 5.x / Python 3.12** (Providing robust ORM, middleware, and authenticated API orchestration).
+*   **Asynchronous Processing**: **Celery + Redis** (Enabling non-blocking, multi-threaded scan executions and real-time state updates).
+*   **Database Management**: **SQLite3** (Optimized for demo portability) / **PostgreSQL** (Production ready).
+*   **Environment Orchestration**: Fully automated `.env` integration via custom `manage.py` hooks.
 
-### 🚧 Roadmap (Needs Work for Production)
-*   **Full Headless Crawling at Scale**: The current prototype executes concurrent tasks, but full-scale recursive Playwright scraping across 1000+ pages requires a serverless orchestration layer.
-*   **Production Vector Database**: Migrating historical attack patterns from JSON memory to a production Pinecone instance.
-*   **Live Webhook Execution**: Connecting the simulated Slack/Teams alerts directly into corporate CI/CD pipeline triggers.
-*   **Rust PyO3 Extension Native Compilation**: JIT-compiled regex scanning is scaffolded but needs native environment compilation to achieve 100x speeds.
+### **Frontend & Visual Architecture**
+*   **Design System**: **Vanilla CSS + Tailwind CSS** (Bespoke "Luxury Cream" design tokens with high-contrast technical dark-mode overrides).
+*   **Dynamic Data Visuals**: **Matplotlib** (Backend-generated kernel load telemetry) + **Mathematical SVG Plotting** (Network logic maps).
+*   **Micro-interactions**: Framer-style smooth transitions, interactive gauge indicators (math-parsed), and glassmorphism navbar.
 
----
+### **Artificial Intelligence & Machine Learning**
+*   **Reasoning Engine**: **OpenRouter API (WizardLM-2-8x22B) / OpenAI (GPT-4o)** (Autonomous vulnerability logic reasoning).
+*   **Self-Healing Models**: **PyTorch LSTM** (`SimpleTracebackEncoder`) (Classifying stack-trace failures into automated patch categories).
+*   **Oracle Anomaly Engine**: **PyTorch LSTM** (`AnomalyDetectorLSTM`) (Predictive analysis of scanner metrics to prevent system overloads).
+*   **Outlier Detection**: **PyOD (Isolation Forest)** (Identifying anomalous telemetry spikes during live scans).
+*   **PII Intelligence**: **Microsoft Presidio** (Real-time scrubbing of sensitive PII data from security reports).
 
-## 🧠 Advanced Tech Stack (Deep Dive)
-
-| Layer | Technology | Purpose | Status |
-|-------|-----------|---------|--------|
-| **Core Logic Server** | Django / Python 3.12 | Backend routing, ORM, authentication, REST API | ✅ Working |
-| **Frontend UI** | Tailwind CSS + Vanilla JS | Premium "Luxury Cream" operational dashboard | ✅ Working |
-| **AI Reasoning Engine** | OpenRouter / OpenAI API | LLM-powered BOLA/IDOR vulnerability analysis | ✅ Working |
-| **Self-Healing Model** | PyTorch LSTM | Classifies traceback signatures → suggests code patches | ✅ Working |
-| **Anomaly Detection Model**| PyTorch LSTM | Predicts system crash patterns from scanner metrics | ✅ Working |
-| **Statistical Anomaly** | PyOD (Isolation Forest) | Detects metric outliers in scan telemetry | ✅ Working |
-| **PII Protection** | Microsoft Presidio | Redacts emails, credit cards, IPs from scan reports | ✅ Working |
-| **Task Queue** | Celery + Redis | Async pipeline execution for concurrent scans | ✅ Working |
-| **Database** | SQLite3 (Demo) / PostgreSQL | Scan results, user registry, domain verification | ✅ Working |
-| **Shadow DOM Crawler** | Playwright (Headless) | Maps hidden DOM elements, SPAs, async endpoints | ⚠️ Simulated |
-| **OAST Network** | Interactsh-style callbacks| Blind SSRF / DNS exfiltration verification | ⚠️ Simulated |
-| **CI/CD Pipeline** | Bandit SAST + Pytest | Automated security scanning and code patching | ✅ Working |
+### **Security Tooling & Protocols**
+*   **MCP (Model Context Protocol)**: Universal JSON-RPC interface for AI agent tool-discovery (Claude/GPT integration).
+*   **Kali Linux Integration**: **Docker-based MCP tool server** (Remotely invoking Nmap and recon tools).
+*   **OAST Mesh**: **Interactsh-style callback listeners** (Tracking out-of-band DNS/HTTP exfiltration).
+*   **Crawl Logic**: **Playwright (Headless Chromium)** (Recursive Shadow DOM and SPA route reconstruction).
 
 ---
 
-## 🔌 Core Engine Modules
+## 🌊 Core Operational Workflow
 
-### 1. The Autonomous Scanner
-The engine conducts automated dynamic spidering of the target asset. Unlike standard DAST tools, our scanner categorizes URLs structurally, identifying which parameters dictate authorization levels before launching mutation attacks. 
+### **Phase 1: Asset Ingestion & Verification**
+The operator registers the target domain. SECUREWAY utilizes a **Fast-Track Verification** system, checking for DNS TXT records or well-known file placements to ensure the operator is authorized to conduct deep scans.
 
-### 2. High-Density Shadow Map
-A standout feature of the frontend is the **Shadow Map DOM Logic Visualization**. Using custom-built backend Python generators mapped to dynamic HTML templating, we render a live, breathing representation of the target asset's internal infrastructure, highlighting potential vulnerabilities in real-time.
+### **Phase 2: Shadow DOM Logic Reconstruction**
+Our autonomous crawler executes JavaScript and traverses SPAs. It generates a **High-Density Shadow Map**—a mathematical graph of the target asset's internal logic nodes, displayed in the "Command Center" via interactive SVG clusters.
 
-### 3. Predictive "Oracle" Anomaly Engine
-The Oracle is a predictive crash prevention system. It monitors the history of concurrent scan requests and uses an `AnomalyDetectorLSTM` PyTorch model to predict an impending system overload *before* it happens, ensuring stable scanning telemetry.
+### **Phase 3: Cognitive Vulnerability Discovery**
+SECUREWAY's engine initiates multi-layered testing:
+1.  **Logic Correlation**: Comparing endpoint behavior across multiple user IDs to identify **BOLA (IDOR)** flaws.
+2.  **Telemetry Analysis**: The **Oracle Engine** monitors CPU/RAM load, adjusting scan speed via LSTM-based predictive failure analysis.
+3.  **Threat Intelligence**: LLMs analyze discovered forms and endpoints to generate zero-day exploit variants tailored to the target's business logic.
 
-### 4. BOLA Intelligence Center 
-Focuses explicitly on identifying Broken Object Level Authorization (BOLA). It feeds endpoint responses into advanced AI logic engines to deduce whether manipulating parameter IDs results in unauthorized privilege execution.
+### **Phase 4: Auto-Remediation & Reporting**
+*   **Cure Agent**: The system analyzes failed tests and generates **Self-Healing Code Patches** using AST (Abstract Syntax Tree) manipulation.
+*   **Redaction**: Microsoft Presidio scrubs all sensitive user data from the findings.
+*   **Master Report**: A comprehensive technical archive is generated, available for immediate download in PDF/TXT format.
 
 ---
 
-## 💻 Local Setup & Implementation
+## 🔌 Integrated Features (Demo Ready)
 
-### Prerequisites
-- Python 3.10+
-- Git
+| Module | Functional Logic | Status |
+|--------|------------------|--------|
+| **Anomaly Vault** | Real-time outlier visualization with circular math-gauge tracking. | ✅ Live |
+| **BOLA Lab** | Direct testing interface for Broken Object Level Authorization logic. | ✅ Live |
+| **Shadow Map** | Architectural network map showing 35+ dynamic logic nodes. | ✅ Live |
+| **Threat Intel** | Live feed of categorized vulnerabilities with tactic/technique mapping. | ✅ Live |
+| **OAST Mesh** | Monitoring dashboard for Blind Callbacks (SSRF/RCE). | ✅ Live |
+| **Kernel Status** | Multi-plot telemetry showing real-time system/scanner health. | ✅ Live |
 
-### Step-by-Step
+---
+
+## � Installation & Local Setup
+
+### **Prerequisites**
+*   Python 3.10+
+*   Git (Binary path added to environment)
+*   Redis-CLI (Optional for async queue)
+
+### **Quickstart**
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/Ritiksingh96-cmd/SecureWay.git
-cd SecureWay
+# Clone the repository
+git clone https://github.com/Ritiksingh96-cmd/SecureConnect.git
+cd SecureConnect
 
-# 2. Create virtual environment
+# Setup environment
 python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # Mac/Linux
+venv\Scripts\activate
 
-# 3. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure environment variables
-# Create a .env file in the root directory to store your API keys:
-echo OPENAI_API_KEY=your-sk-key-here > .env
-
-# 5. Run database migrations
+# Database Init
 python manage.py makemigrations
 python manage.py migrate
 
-# 6. Start the Django Development Server
-python manage.py runserver
-# Or use the provided batch script on Windows: run_secureway.bat
+# Create Superuser (Command Center Access)
+python manage.py createsuperuser
 
-# 7. Access the platform
-# Open: http://127.0.0.1:8000
+# Execution
+python manage.py runserver 8080
+# Or launch the automated script:
+run_secureway.bat
 ```
 
 ---
 
-## 👨‍💻 Primary Author & Maintainer
+## 👨‍💻 Primary Author & Lead Developer
 
 **Ritik Singh**
-- Contact Direct Line: +91 - 9315908389
-- Operational Support: support@secureway.tech
-- GitHub: [Ritiksingh96-cmd](https://github.com/Ritiksingh96-cmd)
+*   **Lead Developer**: Strategic AI Implementation & Luxury UI Design.
+*   **Contact Mobilization**: +91 - 9315908389
+*   **Operational Support**: support@secureway.tech
+*   **GitHub Repository**: [Ritiksingh96-cmd/SecureConnect](https://github.com/Ritiksingh96-cmd/SecureConnect)
 
 <div align="center">
   <br/>
-  <p><b>Securing the global logic fabric through autonomous agents.</b></p>
+  <p><b>India Innovation 2026 — Securing the Global Logic Fabric through Autonomous Logic Engines.</b></p>
 </div>
