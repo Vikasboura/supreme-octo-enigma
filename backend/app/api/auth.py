@@ -104,3 +104,41 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     return User(email="test@example.com", full_name="Test User")
+
+# Simple API Key storage
+API_KEYS_FILE = os.path.join(DATA_DIR, "api_keys.json")
+if not os.path.exists(API_KEYS_FILE):
+    with open(API_KEYS_FILE, "w") as f:
+        json.dump({}, f)
+
+def get_api_keys_db():
+    with open(API_KEYS_FILE, "r") as f:
+        return json.load(f)
+
+def save_api_keys_db(keys):
+    with open(API_KEYS_FILE, "w") as f:
+        json.dump(keys, f, indent=4)
+
+@router.post("/apikeys/generate")
+async def generate_api_key(alias: str, current_user: User = Depends(get_current_user)):
+    """
+    CI/CD Integration: Generates a persistent API token mapped to a specific user and alias
+    (e.g., 'GitHub Actions Token'). This allows automated runners to trigger pipelines
+    without logging in to create short-lived web JWTs.
+    """
+    keys_db = get_api_keys_db()
+    raw_key = secrets.token_urlsafe(32)
+    api_key = f"sw_{raw_key}"
+    
+    keys_db[api_key] = {
+        "email": current_user.email,
+        "alias": alias,
+        "active": True
+    }
+    
+    save_api_keys_db(keys_db)
+    return {
+        "alias": alias,
+        "api_key": api_key,
+        "message": "Keep this secure! It cannot be fully retrieved again."
+    }

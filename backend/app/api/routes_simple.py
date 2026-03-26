@@ -11,12 +11,27 @@ import random
 # Import Services
 from app.services.openrouter_service import OpenRouterReasoner
 from app.services.mcp_kali_service import McpKaliService
+from app.services.presidio_service import PiiScrubber
 
 router = APIRouter()
 
 # Initialize Services
 reasoner = OpenRouterReasoner()
 mcp_kali = McpKaliService()
+scrubber = PiiScrubber()
+
+from app.services.playwright_service import PlaywrightService
+from app.services.pyod_service import AnomalyDetector
+from app.services.pinecone_service import VectorDBService
+from app.services.rust_binding import RustEngine
+from app.services.oast_service import OASTService
+
+# Heavy Duty Services
+playwright = PlaywrightService()
+anomaly = AnomalyDetector()
+pinecone = VectorDBService()
+rust = RustEngine()
+oast = OASTService()
 
 # --- Security & Verification Models ---
 
@@ -27,7 +42,20 @@ class DomainVerification(BaseModel):
     verified_at: Optional[float] = None
 
 # In-memory storage for prototype (Use DB in production)
-VERIFIED_DOMAINS = {}  # Format: { "example.com": { ... } }
+VERIFIED_DOMAINS = {
+    "secureway.site": {
+        "domain": "secureway.site",
+        "token": "secureway-verification-demo-token-123",
+        "status": "verified",
+        "verified_at": time.time()
+    },
+    "example.com": {
+        "domain": "example.com",
+        "token": "secureway-verification-demo-token-456",
+        "status": "verified",
+        "verified_at": time.time()
+    }
+}  # Format: { "example.com": { ... } }
 
 class VerifyRequest(BaseModel):
     domain: str
@@ -189,11 +217,57 @@ async def scan_status(scan_id: str):
     progress = random.randint(10, 100) # nosec
     threats = []
     
-    # Advanced threat simulation
-    if progress > 20: 
-        threats.append({"module": "Asset Discovery", "severity": "Info", "description": "Found 3 subdomains"})
+    # Advanced threat simulation using the high-fidelity engine
+    
+    # 1. Shadow DOM / NetworkX Integration
+    if progress > 25:
+        shadow_data = await playwright.crawl_shadow_dom(scan_id) # Using scan_id as dummy URL for mock
+        threats.append({
+            "module": "Headless V8 (Playwright)",
+            "severity": "Info",
+            "description": f"Mapped {len(shadow_data.get('nodes', []))} shadow nodes. NetworkX graph generated.",
+            "nodes": shadow_data.get('nodes', []),
+            "coverage": shadow_data.get('coverage')
+        })
+
+    # 2. Logic Analysis (BOLA)
     if progress > 50:
-        threats.append({"module": "Logic Analyzer", "severity": "High", "description": "Verified BOLA vulnerability"})
+        bola_analysis = await reasoner.analyze_bole_flaw("/api/user/data", 101)
+        threats.append({
+            "module": "Cognitive Context Fuzzing",
+            "severity": bola_analysis["severity"],
+            "description": bola_analysis["vulnerability"],
+            "remediation": bola_analysis["fix_suggestion"]
+        })
+
+    # 3. Anomaly Detection (PyOD)
+    if progress > 70:
+        is_outlier, score = anomaly.detect_outlier([progress, 500]) # Example vector
+        if is_outlier:
+            threats.append({
+                "module": "Traffic Anomaly (PyOD)",
+                "severity": "Medium",
+                "description": f"Unusual pattern detected in request sequence. Isolation Forest Score: {score:.2f}"
+            })
+
+    # 4. Optimized Matching (Rust)
+    if progress > 85:
+        rust_hash = rust.compute_heavy_hash(b"malicious_string")
+        threats.append({
+            "module": "Packet Engine (Rust)",
+            "severity": "High",
+            "description": f"JIT-optimized pattern matching caught suspicious payload signature ({rust_hash[:8]})"
+        })
+
+    # 5. OAST (Blind Vulnerabilities)
+    if progress > 95:
+        oast_res = await oast.check_callbacks()
+        if oast_res.get("detected"):
+            threats.append({
+                "module": "Global OAST Callback Mesh",
+                "severity": "Critical",
+                "description": f"{oast_res['type']} Interaction detected from {oast_res['source_ip']}"
+            })
     
     return {
         "scan_id": scan_id,

@@ -17,8 +17,6 @@ paramiko
 detect-secrets
 defusedxml
 sqlparse
-tlsslite-ng
-mechanize
 celery
 redis
 playwright

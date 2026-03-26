@@ -7,7 +7,7 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 celery_app = Celery("secureway", 
                     broker=REDIS_URL,
                     backend=REDIS_URL,
-                    include=["app.services.discovery_worker"])
+                    include=["app.services.discovery_worker", "app.services.ci_cd_tasks"])
 
 celery_app.conf.update(
     task_serializer="json",

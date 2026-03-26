@@ -14,8 +14,12 @@ python main.py
 
 ### 2. Access the Web Interface
 Open your browser and navigate to:
-**[http://localhost:8000](http://localhost:8000)**
-This serves the new professional, dark-themed frontend.
+**[http://localhost:3000](http://localhost:3000)**
+This serves the professional, luxury-themed Django frontend.
+
+### 3. Access the API Documentation
+The security logic engine API can be explored at:
+**[http://localhost:8000/docs](http://localhost:8000/docs)**
 
 ---
 
