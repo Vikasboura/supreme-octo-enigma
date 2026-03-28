@@ -10,3 +10,9 @@ python-dotenv
 requests
 matplotlib
 numpy
+
+# Production dependencies
+gunicorn
+dj-database-url
+whitenoise
+paramiko

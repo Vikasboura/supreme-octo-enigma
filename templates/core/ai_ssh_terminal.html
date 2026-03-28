@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}AI SSH Brain - SecureWay{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-t-lg p-6 text-white">
+            <h1 class="text-3xl font-bold flex items-center">
+                <i class="fas fa-brain mr-3"></i> AI SSH Brain
+                <span class="ml-4 px-3 py-1 bg-white/20 rounded-full text-sm font-normal">Powered by OpenRouter</span>
+            </h1>
+            <p class="mt-2 text-purple-100">
+                Natural language penetration testing. Just describe what you want, and AI will translate it to Linux commands.
+            </p>
+        </div>
+        
+        <!-- Main Interface -->
+        <div class="bg-white dark:bg-gray-800 rounded-b-lg shadow-lg p-6">
+            <!-- Input Section -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Describe your security testing task:
+                </label>
+                <div class="flex gap-2">
+                    <input type="text" id="ai-input" 
+                           class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                           placeholder="e.g., 'Scan example.com for open ports', 'Check if website is vulnerable to SQL injection', 'List all subdomains of target.com'..."
+                           onkeypress="if(event.key==='Enter') executeAICommand()">
+                    <button onclick="executeAICommand()" 
+                            class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center">
+                        <i class="fas fa-paper-plane mr-2"></i> Execute
+                    </button>
+                </div>
+                
+                <!-- Quick Examples -->
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <span class="text-xs text-gray-500">Quick examples:</span>
+                    <button onclick="setExample('Scan 192.168.1.1 for open ports')" class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-purple-100 dark:hover:bg-purple-900 rounded text-gray-600 dark:text-gray-400 transition-colors">Port Scan</button>
+                    <button onclick="setExample('Find subdomains of example.com')" class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-purple-100 dark:hover:bg-purple-900 rounded text-gray-600 dark:text-gray-400 transition-colors">Subdomain Discovery</button>
+                    <button onclick="setExample('Check website for vulnerabilities using nuclei')" class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-purple-100 dark:hover:bg-purple-900 rounded text-gray-600 dark:text-gray-400 transition-colors">Vulnerability Scan</button>
+                    <button onclick="setExample('Brute force directories on http://target.com')" class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-purple-100 dark:hover:bg-purple-900 rounded text-gray-600 dark:text-gray-400 transition-colors">Directory Brute</button>
+                </div>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div id="ai-loading" class="hidden mb-6">
+                <div class="flex items-center justify-center space-x-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div class="flex space-x-1">
+                        <div class="w-3 h-3 bg-purple-600 rounded-full animate-bounce"></div>
+                        <div class="w-3 h-3 bg-purple-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-3 h-3 bg-purple-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                    <span class="text-purple-700 dark:text-purple-300 font-medium">AI is thinking and translating your request...</span>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="ai-results" class="hidden space-y-4">
+                <!-- AI Generated Command -->
+                <div class="border border-green-200 dark:border-green-800 rounded-lg overflow-hidden">
+                    <div class="bg-green-50 dark:bg-green-900/30 px-4 py-2 border-b border-green-200 dark:border-green-800">
+                        <span class="text-green-800 dark:text-green-300 font-medium text-sm">
+                            <i class="fas fa-robot mr-2"></i>AI Generated Command
+                        </span>
+                    </div>
+                    <div class="bg-black p-4">
+                        <code id="generated-command" class="text-green-400 font-mono text-sm"></code>
+                    </div>
+                </div>
+                
+                <!-- Command Output -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                    <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <span class="text-gray-700 dark:text-gray-300 font-medium text-sm">
+                            <i class="fas fa-terminal mr-2"></i>Kali Linux Output
+                        </span>
+                        <span id="execution-status" class="text-xs px-2 py-1 rounded-full"></span>
+                    </div>
+                    <div class="bg-black p-4 max-h-96 overflow-y-auto">
+                        <pre id="command-output" class="text-green-400 font-mono text-sm whitespace-pre-wrap"></pre>
+                    </div>
+                </div>
+                
+                <!-- AI Analysis -->
+                <div class="border border-blue-200 dark:border-blue-800 rounded-lg overflow-hidden">
+                    <div class="bg-blue-50 dark:bg-blue-900/30 px-4 py-2 border-b border-blue-200 dark:border-blue-800">
+                        <span class="text-blue-800 dark:text-blue-300 font-medium text-sm">
+                            <i class="fas fa-lightbulb mr-2"></i>AI Security Analysis
+                        </span>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-gray-800">
+                        <p id="ai-analysis" class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Error Display -->
+            <div id="ai-error" class="hidden mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                    <span id="error-message" class="text-red-700 dark:text-red-300"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Instructions Card -->
+        <div class="mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-sm text-gray-600 dark:text-gray-400">
+            <h3 class="font-medium text-gray-800 dark:text-gray-200 mb-2">
+                <i class="fas fa-info-circle mr-2"></i>How it works:
+            </h3>
+            <ol class="list-decimal list-inside space-y-1">
+                <li>Describe what you want to do in plain English</li>
+                <li>AI (OpenRouter: arcee-ai/trinity-large-preview) translates it to a Linux command</li>
+                <li>Command is executed on your Kali Linux (192.168.179.183) via SSH</li>
+                <li>AI analyzes the output and provides security insights</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<script>
+function setExample(text) {
+    document.getElementById('ai-input').value = text;
+    document.getElementById('ai-input').focus();
+}
+
+function executeAICommand() {
+    const input = document.getElementById('ai-input').value.trim();
+    if (!input) {
+        alert('Please enter a request');
+        return;
+    }
+    
+    // Show loading, hide previous results
+    document.getElementById('ai-loading').classList.remove('hidden');
+    document.getElementById('ai-results').classList.add('hidden');
+    document.getElementById('ai-error').classList.add('hidden');
+    
+    fetch('{% url "core:execute_ai_ssh_command" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ request: input })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('ai-loading').classList.add('hidden');
+        
+        if (data.success) {
+            document.getElementById('ai-results').classList.remove('hidden');
+            document.getElementById('generated-command').textContent = data.generated_command;
+            document.getElementById('command-output').textContent = data.command_output || 'No output';
+            document.getElementById('ai-analysis').textContent = data.ai_analysis || 'Analysis not available';
+            
+            const statusEl = document.getElementById('execution-status');
+            statusEl.textContent = 'Success';
+            statusEl.className = 'text-xs px-2 py-1 rounded-full bg-green-100 text-green-800';
+        } else {
+            document.getElementById('ai-error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = data.error || 'Unknown error';
+        }
+    })
+    .catch(error => {
+        document.getElementById('ai-loading').classList.add('hidden');
+        document.getElementById('ai-error').classList.remove('hidden');
+        document.getElementById('error-message').textContent = error.message;
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

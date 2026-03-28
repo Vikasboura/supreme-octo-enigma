@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Kali Remote Terminal - SecureWay{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6 bg-primary text-white flex justify-between items-center">
+            <h1 class="text-2xl font-bold flex items-center">
+                <i class="fas fa-terminal mr-3"></i> Kali Remote Execution
+            </h1>
+            <span class="px-3 py-1 bg-green-500 rounded-full text-xs font-semibold uppercase">Secure Connection</span>
+        </div>
+        
+        <div class="p-6">
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+                Execute whitelisted commands on the remote Kali Linux machine. All actions are logged for security auditing.
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <button onclick="runCommand('whoami')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-user mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>whoami</span>
+                </button>
+                <button onclick="runCommand('ls')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-folder-open mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>List Files</span>
+                </button>
+                <button onclick="runCommand('uptime')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-clock mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>Uptime</span>
+                </button>
+                <button onclick="runCommand('check_n')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-file-alt mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>Check n.txt</span>
+                </button>
+                <button onclick="runCommand('ifconfig')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-network-wired mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>Network</span>
+                </button>
+                <button onclick="runCommand('netstat')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-plug mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>Ports</span>
+                </button>
+                <button onclick="runCommand('ps')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-tasks mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>Processes</span>
+                </button>
+                <button onclick="runCommand('df')" class="flex flex-col items-center p-4 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-lg transition-all group">
+                    <i class="fas fa-hdd mb-2 text-xl group-hover:text-white text-primary"></i>
+                    <span>Disk Space</span>
+                </button>
+            </div>
+
+            <div class="relative">
+                <div class="absolute top-2 right-2 flex space-x-2">
+                    <button onclick="clearTerminal()" class="text-xs text-gray-500 hover:text-white bg-transparent hover:bg-gray-600 px-2 py-1 rounded transition-colors">
+                        Clear
+                    </button>
+                </div>
+                <div id="terminal" class="bg-black text-green-400 p-4 font-mono text-sm h-96 overflow-y-auto rounded-lg border-4 border-gray-700 shadow-inner">
+                    <div class="mb-2 text-gray-500"># System initialized. Waiting for command...</div>
+                </div>
+            </div>
+            
+            <div id="status" class="mt-4 text-sm hidden">
+                <div class="flex items-center">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                    <span class="text-gray-600 dark:text-gray-400">Executing remote command...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function runCommand(cmd) {
+        const terminal = document.getElementById('terminal');
+        const status = document.getElementById('status');
+        
+        // Add command to terminal
+        const cmdLine = document.createElement('div');
+        cmdLine.className = 'mt-4 text-blue-400';
+        cmdLine.innerHTML = `<span class="text-white">kali@remote:~$</span> ${cmd}`;
+        terminal.appendChild(cmdLine);
+        
+        // Show status
+        status.classList.remove('hidden');
+        
+        fetch('{% url "core:execute_kali_command" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ command: cmd })
+        })
+        .then(response => response.json())
+        .then(data => {
+            status.classList.add('hidden');
+            
+            const outputLine = document.createElement('pre');
+            outputLine.className = 'whitespace-pre-wrap mt-2';
+            
+            if (data.success) {
+                outputLine.textContent = data.output || 'Command executed with no output.';
+            } else {
+                outputLine.className += ' text-red-500';
+                outputLine.textContent = `Error: ${data.error}`;
+            }
+            
+            terminal.appendChild(outputLine);
+            terminal.scrollTop = terminal.scrollHeight;
+        })
+        .catch(error => {
+            status.classList.add('hidden');
+            const errLine = document.createElement('div');
+            errLine.className = 'text-red-500 mt-2';
+            errLine.textContent = `System Error: ${error.message}`;
+            terminal.appendChild(errLine);
+        });
+    }
+
+    function clearTerminal() {
+        const terminal = document.getElementById('terminal');
+        terminal.innerHTML = '<div class="mb-2 text-gray-500"># Terminal cleared. Ready.</div>';
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}
