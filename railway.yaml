@@ -1,0 +1,43 @@
+name: secureway
+services:
+  - type: web
+    name: secureway-web
+    env: python
+    buildCommand: |
+      pip install --upgrade pip
+      pip install gunicorn whitenoise dj-database-url
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: python -m gunicorn secureway.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: DJANGO_SETTINGS_MODULE
+        value: secureway.settings
+      - key: DATABASE_URL
+        fromDatabase:
+          name: secureway-db
+          property: connectionString
+      - key: KALI_HOST
+        sync: false
+      - key: KALI_USER
+        value: kali
+      - key: KALI_PASS
+        sync: false
+      - key: KALI_PORT
+        value: "22"
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: "arcee-ai/trinity-large-preview:free"
+
+databases:
+  - name: secureway-db
+    databaseName: secureway
+    user: secureway
+    plan: free
